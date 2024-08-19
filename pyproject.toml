@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "technical-challenge"
+version = "0.1.0"
+description = ""
+authors = ["Martín Pepi <martinpepi_99@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.112.1"
+supabase = "^2.7.2"
+sqlalchemy = "^2.0.32"
+psycopg2 = "^2.9.9"
+uvicorn = "^0.30.6"
+pydantic = "^2.8.2"
+pydantic-settings = "^2.4.0"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+uvicorn = "^0.30.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

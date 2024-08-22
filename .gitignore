@@ -26,3 +26,6 @@ coverage.xml
 *.cover
 *.py,cover
 *.pylint
+
+
+typesense-data/

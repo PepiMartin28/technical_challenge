@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
-from sqlalchemy import label
+from fastapi import APIRouter, HTTPException, Query, Depends
 
 from app.db.connection import session
 from app.db.models.release import Release
@@ -7,11 +6,12 @@ from app.db.models.release_type import Release_Type
 from app.schemas.release import ReleaseSchema, ReleaseCreateSchema, ReleaseUpdateSchema
 from app.schemas.pagination import PaginationSchema
 from app.utils.general_functions import get_item_by_id, update_fields
+from app.utils.auth_functions import is_user_authenticated
 
 realease_routes = APIRouter()
 
 @realease_routes.post("/", tags=["release"])
-def post_release(release: ReleaseCreateSchema):
+async def post_release(release: ReleaseCreateSchema, authenticated = Depends(is_user_authenticated)):
     try:
         get_item_by_id(release.release_type_id, session, Release_Type)
     except:
@@ -28,7 +28,7 @@ def post_release(release: ReleaseCreateSchema):
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
 
 @realease_routes.get("/", tags=["release"], response_model=PaginationSchema)
-def list_releases(
+async def list_releases(
     page_num: int = Query(1, ge=1),
     items_per_page: int = Query(100, ge=1, le=1000)
 ):
@@ -58,7 +58,7 @@ def list_releases(
 
 
 @realease_routes.get("/{id}", tags=["release"], response_model=ReleaseSchema)
-def get_release(id: int):
+async def get_release(id: int, authenticated = Depends(is_user_authenticated)):
     try:
         release = get_item_by_id(id, session, Release)
         
@@ -67,7 +67,7 @@ def get_release(id: int):
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
     
 @realease_routes.put("/{id}", tags=["release"])
-def update_release(id: int, release:ReleaseUpdateSchema):
+async def update_release(id: int, release:ReleaseUpdateSchema, authenticated = Depends(is_user_authenticated)):
     try:
         get_item_by_id(release.release_type_id, session, Release_Type)
     except:
@@ -87,7 +87,7 @@ def update_release(id: int, release:ReleaseUpdateSchema):
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
     
 @realease_routes.delete("/{id}", tags=["release"])
-def delete_release(id: int):
+async def delete_release(id: int, authenticated = Depends(is_user_authenticated)):
     try:
         release_delete = get_item_by_id(id, session, Release)
         

@@ -7,8 +7,9 @@ from app.db.models.base import BaseClass
 class Artist(BaseClass):
     __tablename__ = 'artist'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column()
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now())
 
     track_artists: Mapped[List["Track_Artist"]] = relationship("Track_Artist", back_populates='artist')
+

@@ -7,3 +7,4 @@ class PaginationSchema(BaseModel):
     items_per_page: int
     total_items: int
     data: List[Any]
+

@@ -16,3 +16,4 @@ schema = {
 
 
 client.collections.create(schema)
+

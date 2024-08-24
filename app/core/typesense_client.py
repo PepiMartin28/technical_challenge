@@ -12,3 +12,4 @@ client = typesense.Client({
     'connection_timeout_seconds': 2
 })
 
+

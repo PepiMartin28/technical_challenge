@@ -7,7 +7,7 @@ from app.db.models.base import BaseClass
 class Release_Country(BaseClass):
     __tablename__ = 'release_country'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     release_id: Mapped[int] = mapped_column(ForeignKey('release.id'))
     country_id: Mapped[int] = mapped_column(ForeignKey('country.id'), nullable=True)
     release_year: Mapped[int] = mapped_column(nullable=True)
@@ -15,3 +15,4 @@ class Release_Country(BaseClass):
     
     release: Mapped["Release"] = relationship("Release", back_populates='release_countries')
     country: Mapped["Country"] = relationship("Country", back_populates='release_countries')
+    

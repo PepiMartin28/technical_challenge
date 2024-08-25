@@ -2,11 +2,14 @@ from fastapi import APIRouter, HTTPException, Query, Depends, status
 
 from app.db.connection import session
 from app.db.models.track import Track
+from app.db.models.track_artist import Track_Artist
+from app.db.models.artist import Artist
 from app.db.models.release import Release
 from app.schemas.track import TrackSchema, TrackCreateSchema, TrackUpdateSchema
 from app.schemas.pagination import PaginationSchema
 from app.utils.general_functions import get_item_by_id, update_fields
 from app.utils.auth_functions import is_user_authenticated
+from app.utils.track_functions import add_track_typesense
 
 track_routes = APIRouter()
 
@@ -18,11 +21,26 @@ async def post_track(track: TrackCreateSchema, authenticated = Depends(is_user_a
         raise HTTPException(status_code=404, detail="There is no release with this id.")
     
     try:
-        new_track = Track(**track.model_dump())
+        get_item_by_id(track.release_id, session, Release)
+        
+        valid_artist_ids = {artist.id for artist in session.query(Artist.id).all()}
+        for artist_id in track.artists_id:
+            if artist_id not in valid_artist_ids:
+                raise HTTPException(status_code=404, detail=f"There is no artist with id {artist_id}.")
+        
+        new_track = Track(name=track.name, length_s=track.length_s, release_id=track.release_id)
         session.add(new_track)
+        session.flush()
+        
+        for artist_id in track.artists_id:
+            track_artist = Track_Artist(track_id=new_track.id, artist_id=artist_id)
+            session.add(track_artist)
+        
         session.commit()
-        session.refresh(new_track)
-        return {'message': 'The track has been created succesfully.','data': new_track}
+        
+        add_track_typesense(new_track.id, session)
+        
+        return {'message': 'The track has been created successfully.', 'data': new_track}
     except Exception as e:
         session.rollback()
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query, Depends, status
 
 from app.db.connection import session
 from app.db.models.track import Track
@@ -10,7 +10,7 @@ from app.utils.auth_functions import is_user_authenticated
 
 track_routes = APIRouter()
 
-@track_routes.post("/", tags=["tracks"])
+@track_routes.post("/", tags=["tracks"], status_code=status.HTTP_201_CREATED)
 async def post_track(track: TrackCreateSchema, authenticated = Depends(is_user_authenticated)):
     try:
         get_item_by_id(track.release_id, session, Release)
@@ -27,7 +27,7 @@ async def post_track(track: TrackCreateSchema, authenticated = Depends(is_user_a
         session.rollback()
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
 
-@track_routes.get("/", tags=["tracks"], response_model=PaginationSchema)
+@track_routes.get("/", tags=["tracks"], response_model=PaginationSchema, status_code=status.HTTP_200_OK)
 async def list_tracks(
     page_num: int = Query(1, ge=1),
     items_per_page: int = Query(200, ge=1, le=1000)
@@ -54,7 +54,7 @@ async def list_tracks(
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
 
 
-@track_routes.get("/{id}", tags=["tracks"], response_model=TrackSchema)
+@track_routes.get("/{id}", tags=["tracks"], response_model=TrackSchema, status_code=status.HTTP_200_OK)
 async def get_track(id: int, authenticated = Depends(is_user_authenticated)):
     try:
         track = get_item_by_id(id, session, Track)
@@ -63,7 +63,7 @@ async def get_track(id: int, authenticated = Depends(is_user_authenticated)):
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
     
-@track_routes.put("/{id}", tags=["tracks"])
+@track_routes.put("/{id}", tags=["tracks"], status_code=status.HTTP_200_OK)
 async def update_track(id: int, track:TrackUpdateSchema, authenticated = Depends(is_user_authenticated)):
     try:
         track_update = get_item_by_id(id, session, Track)
@@ -78,7 +78,7 @@ async def update_track(id: int, track:TrackUpdateSchema, authenticated = Depends
         session.rollback()
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
     
-@track_routes.delete("/{id}", tags=["tracks"])
+@track_routes.delete("/{id}", tags=["tracks"], status_code=status.HTTP_200_OK)
 async def delete_track(id: int, authenticated = Depends(is_user_authenticated)):
     try:
         track_delete = get_item_by_id(id, session, Track)

@@ -5,9 +5,7 @@ __pycache__/
 *.pyd
 *.db
 *.sqlite3
-
-# Archivos de configuración local
-.env
+.pytest_cache/
 
 # Archivos y directorios generados por IDEs
 .vscode/
@@ -18,14 +16,5 @@ __pycache__/
 # Archivos de caché y logs
 *.log
 *.tmp
-
-# Archivos de pruebas
-.coverage
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-*.pylint
-
 
 typesense-data/

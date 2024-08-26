@@ -9,7 +9,7 @@ auth_routes = APIRouter()
 async def sign_up(user: AuthSchema):
     try:
         user = supabase.auth.sign_up(user.model_dump())
-        return {"message": "User signed up successfully"}
+        return {"message": "User signed up successfully."}
     except Exception as e:
         raise HTTPException(status_code=500, detail="An error occurred, please try later.")
     
@@ -17,7 +17,7 @@ async def sign_up(user: AuthSchema):
 async def sign_in(user: AuthSchema):
     try:
         user = supabase.auth.sign_in_with_password(user.model_dump())
-        return {"message": "User signed up successfully", "token": user.session.access_token}
+        return {"message": "User signed in successfully.", "token": user.session.access_token}
     except Exception as e:
-        raise HTTPException(status_code=500, detail="An error occurred, please try later.")
+        raise HTTPException(status_code=400, detail="Invalid login credentials.")
     
